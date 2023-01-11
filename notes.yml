@@ -34,12 +34,11 @@ Installation Notes:
     - DOMAIN=dev.klstr.io erb external-dns/external-dns.yml.erb > external-dns/external-dns.yml
     - kubectl apply -f external-dns/external-dns.yml
 
+  - creating a global storage class for all data storage needs
+    - kubectl apply -f storage-class.yml
 
-
-  - create a pv for person's storage
   - ide deployment k8s yaml
-    - DOMAIN=dev.klstr.io PERSON="madhav-tarkalabs" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml
-    - DOMAIN=dev.klstr.io PERSON="vagmi-tarkalabs" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml
+    - DOMAIN=dev.klstr.io PERSON="madhav-tarkalabs" DISK_SIZE="1Gi" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml
     - kubectl apply -f ide-deployment.yml
     - create /data directory in the node
 
@@ -70,7 +69,21 @@ kubectl run --port=22 madhav-cloud-dev --image=260741046218.dkr.ecr.us-east-1.am
 
 kubectl port-forward --address 0.0.0.0 pod/madhav-cloud-dev 2222:22
 
+kubectl get svc -n madhav-tarkalabs madhav-tarkalabs-ide-svc -o jsonpath={.spec..ports..nodePort}
+
 ctr --namespace k8s.io containers ls
 alias ctr="ctr --namespace k8s.io"
 
 kubectl create secret -n kube-system external-dns
+
+eksctl create iamserviceaccount \
+  --name ebs-csi-controller-sa \
+  --namespace kube-system \
+  --cluster cloud-dev \
+  --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+  --approve \
+  --role-only \
+  --role-name AmazonEKS_EBS_CSI_DriverRole \
+  --profile tarkalabs
+
+eksctl create addon --name aws-ebs-csi-driver --version v1.14.0-eksbuild.1 --cluster cloud-dev --service-account-role-arn arn:aws:iam::260741046218:role/AmazonEKS_EBS_CSI_DriverRole --profile tarkalabs

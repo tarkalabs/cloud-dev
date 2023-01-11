@@ -10,6 +10,9 @@ metadata:
     adminContact: madhav@tarkalabs.com
     project: cloud-dev-envs
 
+iam:
+  withOIDC: true
+
 vpc:
   autoAllocateIPv6: false
   clusterEndpoints:
@@ -33,6 +36,8 @@ addons:
     version: v1.8.7-eksbuild.3
   - name: kube-proxy
     version: v1.24.9-eksbuild.1
+  - name: aws-ebs-csi-driver
+    version: v1.14.0-eksbuild.1
 
 cloudWatch:
     clusterLogging:
@@ -69,10 +74,10 @@ nodeGroups:
       - us-east-1b-public
     iam:
       withAddonPolicies:
-        imageBuilder: true
+        ebs: true
         cloudWatch:	true
         autoScaler: true
-        externalDNS: true
+        imageBuilder: true
 
 # fargateProfiles:
 #   - name: cloud-dev-devops-fp

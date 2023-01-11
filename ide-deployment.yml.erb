@@ -43,17 +43,16 @@ spec:
         app_type: ide
     spec:
       terminationGracePeriodSeconds: 10
-      volumes:
-        - name: hostpath-storage
-          hostPath:
-            path: /data
-            type: Directory
       containers:
         - name: ide
           image: <%= ENV['IDE_IMAGE'] %>
           ports:
             - containerPort: 22
               name: ssh-port
+          resources:
+            requests:
+              cpu: 500m
+              memory: 3Gi
           startupProbe:
             tcpSocket:
               port: ssh-port
@@ -65,6 +64,15 @@ spec:
             failureThreshold: 2
             periodSeconds: 5
           volumeMounts:
-            - name: hostpath-storage
+            - name: data-storage
               mountPath: /root/work
-              subPath: <%= ENV['PERSON'] %>
+  volumeClaimTemplates:
+    - metadata:
+        name: data-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: gp3
+        resources:
+          requests:
+            storage: <%= ENV['DISK_SIZE'] %>
