@@ -8,27 +8,15 @@ kind: Service
 metadata:
   name: <%= ENV['PERSON'] %>-ide-svc
   namespace: <%= ENV['PERSON'] %>
-  # annotations:
-    # service.beta.kubernetes.io/aws-load-balancer-type: nlb
-    # service.beta.kubernetes.io/aws-load-balancer-name: cloud-dev-envs
-    # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
-    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
-    # service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-    # service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-    # service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <%= ENV['SSL_CERT_ARN'] %>
-    # external-dns.alpha.kubernetes.io/hostname: <%= ENV['PERSON'] %>.dev.klstr.io
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: <%= ENV['PERSON'] %>. <%= ENV['DOMAIN'] %>
   labels:
     for: <%= ENV['PERSON'] %>
 spec:
-  type: ExternalName
-  externalName: <%= ENV['PERSON'] %>.dev.klstr.io
+  type: NodePort
   selector:
     for: <%= ENV['PERSON'] %>
     app_type: ide
-  ports:
-    - name: ssh
-      port: 22
 ---
 apiVersion: apps/v1
 kind: StatefulSet

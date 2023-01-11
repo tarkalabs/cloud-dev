@@ -21,6 +21,18 @@ Installation Notes:
     - Updated config is in file ./tekton-config-default.yml
     - kubectl apply -f tekton-config-default.yml
 
+  - external-dns setup
+    - aws iam create-policy --policy-name "AllowExternalDNSUpdates" --policy-document file://external-dns/iam_policy.json --profile tarkalabs
+    - export POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`AllowExternalDNSUpdates`].Arn' --output text)
+    - aws iam create-user --user-name "externaldns" --profile tarkalabs
+    - aws iam attach-user-policy --user-name "externaldns" --policy-arn $POLICY_ARN --profile tarkalabs
+    - eksctl utils associate-iam-oidc-provider --cluster cloud-dev --region us-east-1 --profile tarkalabs --approve
+    - eksctl create iamserviceaccount --cluster cloud-dev --name "external-dns" --namespace kube-system --attach-policy-arn $POLICY_ARN --profile tarkalabs --approve
+    - DOMAIN=dev.klstr.io erb external-dns/external-dns.yml.erb > external-dns/external-dns.yml
+    - kubectl apply -f external-dns/external-dns.yml
+
+
+
   - create a pv for person's storage
   - ide deployment k8s yaml
     - PERSON="madhav-tarkalabs" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml
@@ -57,3 +69,5 @@ kubectl port-forward --address 0.0.0.0 pod/madhav-cloud-dev 2222:22
 
 ctr --namespace k8s.io containers ls
 alias ctr="ctr --namespace k8s.io"
+
+kubectl create secret -n kube-system external-dns
