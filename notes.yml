@@ -1,0 +1,59 @@
+Installation Notes:
+  - eksctl cli installation (https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html)
+    - brew install eksctl
+  - create a ssh key pair in aws
+    - aws ec2 create-key-pair --key-name cloud-dev --key-type rsa --key-format pem --query "KeyMaterial" --output text > cloud-dev.pem
+    - chmod 400 cloud-dev.pem
+    - ssh-keygen -y -f cloud-dev.pem > cloud-dev.pub
+  - Creating EKS cluster
+    - eksctl create cluster -f cluster-config.yml --profile tarkalabs --dry-run
+  - Updated kube context in local
+    - awst => aws --profile tarkalabs
+    - awst eks update-kubeconfig --region us-east-1 --name cloud-dev
+    - kubectl config rename-context arn:aws:eks:us-east-1:260741046218:cluster/cloud-dev cloud-dev
+    - kubectl config use-context cloud-dev
+    - kubectl config delete-context cloud-dev
+
+  - Applied Tekton pipeline yaml
+    - kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
+  - Updated Tekton default config
+    - https://tekton.dev/docs/installation/pipelines/#customizing-basic-execution-parameters
+    - Updated config is in file ./tekton-config-default.yml
+    - kubectl apply -f tekton-config-default.yml
+
+  - create a pv for person's storage
+  - ide deployment k8s yaml
+    - PERSON="madhav-tarkalabs" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml
+    - PERSON="vagmi-tarkalabs" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml
+    - kubectl apply -f ide-deployment.yml
+    - create /data directory in the node
+
+
+
+
+
+  - Created an IAM role for eks managed node group
+    - https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html
+  - Created an eks fargate IAM role for ci cd tasks
+    - https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html
+
+
+
+https://docs.aws.amazon.com/eks/latest/userguide/view-kubernetes-resources.html#view-kubernetes-resources-permissions
+
+eksctl create iamidentitymapping \
+    --cluster cloud-dev \
+    --region=us-east-1 \
+    --arn arn:aws:iam::260741046218:user/Madhava \
+    --group eks-console-dashboard-restricted-access-group \
+    --no-duplicate-arns
+
+eksctl create fargateprofile -f cluster-config.yml --profile tarkalabs
+eksctl create nodegroup -f cluster-config.yml --profile tarkalabs
+
+kubectl run --port=22 madhav-cloud-dev --image=260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1
+
+kubectl port-forward --address 0.0.0.0 pod/madhav-cloud-dev 2222:22
+
+ctr --namespace k8s.io containers ls
+alias ctr="ctr --namespace k8s.io"

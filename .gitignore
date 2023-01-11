@@ -1,0 +1,6 @@
+# output files
+ide-deployment.yml
+
+# ssh keys
+cloud-dev.pub
+cloud-dev.pem

@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: <%= ENV['PERSON'] %>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <%= ENV['PERSON'] %>-ide-svc
+  namespace: <%= ENV['PERSON'] %>
+  # annotations:
+    # service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    # service.beta.kubernetes.io/aws-load-balancer-name: cloud-dev-envs
+    # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    # service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    # service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    # service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <%= ENV['SSL_CERT_ARN'] %>
+    # external-dns.alpha.kubernetes.io/hostname: <%= ENV['PERSON'] %>.dev.klstr.io
+  labels:
+    for: <%= ENV['PERSON'] %>
+spec:
+  type: ExternalName
+  externalName: <%= ENV['PERSON'] %>.dev.klstr.io
+  selector:
+    for: <%= ENV['PERSON'] %>
+    app_type: ide
+  ports:
+    - name: ssh
+      port: 22
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: <%= ENV['PERSON'] %>-ide-ss
+  namespace: <%= ENV['PERSON'] %>
+  labels:
+    for: <%= ENV['PERSON'] %>
+    app_type: ide
+spec:
+  selector:
+    matchLabels:
+      for: <%= ENV['PERSON'] %>
+      app_type: ide
+  serviceName: <%= ENV['PERSON'] %>-cloud-dev
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        for: <%= ENV['PERSON'] %>
+        app_type: ide
+    spec:
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: hostpath-storage
+          hostPath:
+            path: /data
+            type: Directory
+      containers:
+        - name: ide
+          image: <%= ENV['IDE_IMAGE'] %>
+          ports:
+            - containerPort: 22
+              name: ssh-port
+          startupProbe:
+            tcpSocket:
+              port: ssh-port
+            failureThreshold: 12
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: ssh-port
+            failureThreshold: 2
+            periodSeconds: 5
+          volumeMounts:
+            - name: hostpath-storage
+              mountPath: /root/work
+              subPath: <%= ENV['PERSON'] %>

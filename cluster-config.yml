@@ -1,0 +1,86 @@
+# https://eksctl.io/usage/schema/
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: cloud-dev
+  region: us-east-1
+  version: "1.24"
+  tags:
+    adminContact: madhav@tarkalabs.com
+    project: cloud-dev-envs
+
+vpc:
+  autoAllocateIPv6: false
+  clusterEndpoints:
+    privateAccess: true
+    publicAccess: true
+  subnets:
+    # private:
+    #   us-east-1a-private: { id: subnet-05700e87e69259e8d }
+    #   us-east-1b-private: { id: subnet-00f9f983388e9fd01 }
+    public:
+      us-east-1a-public: { id: subnet-0e707e6901a86320f }
+      us-east-1b-public: { id: subnet-08509bfeb7c8e77e5 }
+
+kubernetesNetworkConfig:
+  ipFamily: IPv4
+
+addons:
+  - name: vpc-cni
+    version: v1.12.0-eksbuild.2
+  - name: coredns
+    version: v1.8.7-eksbuild.3
+  - name: kube-proxy
+    version: v1.24.9-eksbuild.1
+
+cloudWatch:
+    clusterLogging:
+      logRetentionInDays: 14
+      # all supported types: "api", "audit", "authenticator", "controllerManager", "scheduler"
+      enableTypes: ["api"]
+
+nodeGroups:
+  - name: code
+    instanceType: m6a.large
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 2
+    propagateASGTags: true
+    ebsOptimized: true
+    volumeSize: 50
+    volumeType: gp3
+    volumeEncrypted: true
+    amiFamily: AmazonLinux2
+    updateConfig:
+      maxUnavailablePercentage: 10
+    overrideBootstrapCommand: |
+      #!/bin/bash
+      /etc/eks/bootstrap.sh cloud-dev
+    ssh:
+      allow: true
+      publicKeyPath: cloud-dev.pub
+    privateNetworking: false
+    securityGroups:
+      withShared: true
+      withLocal: false
+    subnets:
+      - us-east-1a-public
+      - us-east-1b-public
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        cloudWatch:	true
+        autoScaler: true
+        externalDNS: true
+
+# fargateProfiles:
+#   - name: cloud-dev-devops-fp
+#     subnets:
+#       - us-east-1a-private
+#       - us-east-1b-private
+#     selectors:
+#       # All workloads in the mentioned Kubernetes namespaces will be scheduled onto Fargate
+#       - namespace: devops
+#       - namespace: tekton-pipelines
+#       - namespace: tekton-pipelines-resolvers

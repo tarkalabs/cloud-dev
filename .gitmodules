@@ -1,0 +1,3 @@
+[submodule "nvim-ide"]
+	path = nvim-ide
+	url = https://github.com/vagmi/nvim-ide.git
