@@ -9,7 +9,7 @@ metadata:
   name: <%= ENV['PERSON'] %>-ide-svc
   namespace: <%= ENV['PERSON'] %>
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: <%= ENV['PERSON'] %>. <%= ENV['DOMAIN'] %>
+    external-dns.alpha.kubernetes.io/hostname: <%= ENV['PERSON'] %>.<%= ENV['DOMAIN'] %>
   labels:
     for: <%= ENV['PERSON'] %>
 spec:
@@ -17,6 +17,9 @@ spec:
   selector:
     for: <%= ENV['PERSON'] %>
     app_type: ide
+  ports:
+    - port: 22
+      name: ssh
 ---
 apiVersion: apps/v1
 kind: StatefulSet
