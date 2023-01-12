@@ -84,7 +84,7 @@ spec:
       runAfter:
         - update-k8s-yaml
       workspaces:
-        - name: git-source
+        - name: manifest-dir
           workspace: git-source
       taskRef:
         name: kubernetes-actions
