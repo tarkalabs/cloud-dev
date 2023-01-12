@@ -35,7 +35,17 @@ Installation Notes:
     - kubectl apply -f external-dns/external-dns.yml
 
   - creating a global storage class for all data storage needs
-    - kubectl apply -f storage-class.yml
+    - kubectl apply -f storage-classes.yml
+
+  - ide deployment k8s yaml with pipelines
+    - kubectl create ns devops
+    - kubectl apply -n devops -f tekton/k8s-manifests
+    - kubectl apply -n devops -f tekton/hub-tasks
+    - tkn hub install task git-clone --version 0.6
+
+    - INFRA_REPO_REVISION=dev PERSON=madhav-tarkalabs erb tekton/create-env-pipeline-run.yml.erb > tekton/create-env-pipeline-run.yml
+    - kubectl create -f tekton/create-env-pipeline-run.yml
+    - tkn pipeline logs -n devops
 
   - ide deployment k8s yaml
     - DOMAIN=dev.klstr.io PERSON="madhav-tarkalabs" DISK_SIZE="1Gi" IDE_IMAGE="260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1" SSL_CERT_ARN="arn:aws:acm:us-east-1:260741046218:certificate/60cf073f-822d-41b8-a7ac-238537448187" erb ide-deployment.yml.erb > ide-deployment.yml

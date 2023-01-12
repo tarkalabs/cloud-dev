@@ -5,9 +5,9 @@ metadata:
   name: config-defaults
 data:
   default-timeout-minutes: "60"
-  default-pod-template: |
-    nodeSelector:
-      eks.amazonaws.com/nodegroup: remote-dev-code-node-group
+  # default-pod-template: |
+  #   nodeSelector:
+  #     eks.amazonaws.com/nodegroup: code
   default-managed-by-label-value: "tekton-pipelines"
   default-task-run-workspace-binding: |
     emptyDir: {}

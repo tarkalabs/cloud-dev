@@ -1,0 +1,94 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cloud-dev-new-env-pipeline
+  namespace: devops
+spec:
+  params:
+    - name: cloudDevRepoUrl
+      type: string
+      description: Cloud dev git repo url
+      default: https://github.com/tarkalabs/cloud-dev
+    - name: cloudDevRepoRevision
+      type: string
+      description: Cloud dev git repo revision(i.e. branch, tag, sha, ref, etc...) to use
+      default: dev
+    - name: personName
+      type: string
+      description: Person name to prefix kubernetes resources
+      default: xyz
+    - name: domain
+      type: string
+      description: DNS domain name to configure
+      default: dev.klstr.io
+    - name: storageSize
+      type: string
+      description: Cloud storage size for each user
+      default: 1Gi
+    - name: ideContainerImage
+      type: string
+      description: Base container image to run ide resources in cloud
+      default: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1
+
+  workspaces:
+    - name: git-source
+      description: Infrastructure source code workspace
+
+  tasks:
+    - name: change-workspace-permissions
+      workspaces:
+        - name: source
+          workspace: git-source
+      taskSpec:
+        workspaces:
+          - name: source
+        steps:
+          - image: alpine
+            workingDir: $(workspaces.source.path)
+            script: |
+              chmod 777 -R .
+
+    - name: clone-repo
+      runAfter:
+        - change-workspace-permissions
+      workspaces:
+        - name: output
+          workspace: git-source
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: "$(params.cloudDevRepoUrl)"
+        - name: revision
+          value: "$(params.cloudDevRepoRevision)"
+
+    - name: update-k8s-yaml
+      runAfter:
+        - clone-repo
+      workspaces:
+        - name: source
+          workspace: git-source
+      taskRef:
+        name: cloud-dev-update-env-values
+      params:
+        - name: domain
+          value: "$(params.domain)"
+        - name: personName
+          value: "$(params.personName)"
+        - name: storageSize
+          value: "$(params.storageSize)"
+        - name: ideContainerImage
+          value: "$(params.ideContainerImage)"
+
+    - name: create-k8s-resources
+      runAfter:
+        - update-k8s-yaml
+      workspaces:
+        - name: git-source
+          workspace: git-source
+      taskRef:
+        name: kubernetes-actions
+      params:
+        - name: script
+          value: |
+            kubectl apply -f ide-deployment.yml

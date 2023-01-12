@@ -1,6 +1,7 @@
 # output files
 ide-deployment.yml
 external-dns.yml
+create-env-pipeline-run.yml
 
 # ssh keys
 cloud-dev.pub

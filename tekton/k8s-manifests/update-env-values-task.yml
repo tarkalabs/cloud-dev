@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cloud-dev-update-env-values
+  namespace: devops
+spec:
+  params:
+    - name: personName
+      type: string
+      description: Person name to prefix kubernetes resources
+      default: xyz
+    - name: domain
+      type: string
+      description: DNS domain name to configure
+      default: dev.klstr.io
+    - name: storageSize
+      type: string
+      description: Cloud storage size for each user
+      default: 1Gi
+    - name: ideContainerImage
+      type: string
+      description: Base container image to run ide resources in cloud
+      default: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-22.04-tilt-v1
+
+  workspaces:
+    - name: source
+      description: Cloud dev infra source code workspace
+
+  steps:
+    - image: ruby:alpine
+      workingDir: $(workspaces.source.path)
+      script: |
+        erb ide-deployment.yml.erb > ide-deployment.yml
+        echo ide-deployment.yml
+      env:
+        - name: DOMAIN
+          value: "$(params.domain)"
+        - name: PERSON
+          value: "$(params.personName)"
+        - name: STORAGE_SIZE
+          value: "$(params.storageSize)"
+        - name: IDE_IMAGE
+          value: "$(params.ideContainerImage)"

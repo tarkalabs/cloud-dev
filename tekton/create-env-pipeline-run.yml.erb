@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: env-<%= ENV['PERSON'] %>-
+  namespace: devops
+spec:
+  serviceAccountName: tekton-sa
+  pipelineRef:
+    name: cloud-dev-new-env-pipeline
+  params:
+    - name: cloudDevRepoRevision
+      value: <%= ENV['INFRA_REPO_REVISION'] %>
+    - name: personName
+      value: <%= ENV['PERSON'] %>
+  workspaces:
+    - name: git-source
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3-tekton-pipeline
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
