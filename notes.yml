@@ -39,11 +39,12 @@ Installation Notes:
 
   - ide deployment k8s yaml with pipelines
     - kubectl create ns devops
-    - kubectl apply -n devops -f tekton/k8s-manifests
-    - kubectl apply -n devops -f tekton/hub-tasks
+    - kubectl apply -n devops -f tekton/tekton-sa-role-bindings.yml
+    - kubectl apply -n devops -f tekton/hub-tasks/
     - tkn hub install task git-clone --version 0.6
+    - kubectl apply -n devops -f tekton/resources/
 
-    - INFRA_REPO_REVISION=dev PERSON=madhav-tarkalabs erb tekton/create-env-pipeline-run.yml.erb > output/create-env-pipeline-run.yml
+    - PERSON=madhav-tarkalabs ACTION=apply INFRA_REPO_REVISION=dev erb tekton/create-env-pipeline-run.yml.erb > output/create-env-pipeline-run.yml
     - kubectl create -f output/create-env-pipeline-run.yml
     - tkn pipeline logs -n devops
 

@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: cloud-dev-new-env-pipeline
+  name: cloud-dev-env-pipeline
   namespace: devops
 spec:
   params:
@@ -13,6 +13,10 @@ spec:
       type: string
       description: Cloud dev git repo revision(i.e. branch, tag, sha, ref, etc...) to use
       default: dev
+    - name: action
+      type: string
+      description: Action to perform on kubernetes cluster. i.e. create, delete, apply
+      default: apply
     - name: personName
       type: string
       description: Person name to prefix kubernetes resources
@@ -91,4 +95,4 @@ spec:
       params:
         - name: script
           value: |
-            kubectl apply -f ide-deployment.yml
+            kubectl $(params.action) -f ide-deployment.yml
