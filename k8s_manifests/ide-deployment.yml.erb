@@ -35,6 +35,8 @@ spec:
       for: <%= ENV['PERSON'] %>
       app_type: ide
   serviceName: <%= ENV['PERSON'] %>-cloud-dev
+  updateStrategy:
+    type: RollingUpdate
   replicas: 1
   template:
     metadata:
