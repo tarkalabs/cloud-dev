@@ -3,7 +3,7 @@ version_settings(constraint='>=0.31.1')
 load('ext://kubectl_build', 'kubectl_build')
 
 k8s_yaml([
-  'cloud-dev-frontend/deployment.yaml'
+  'cloud-dev-frontend/k8s.yaml'
 ])
 
 k8s_resource("frontend", port_forwards="3000", labels=["frontend"])
