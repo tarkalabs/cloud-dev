@@ -17,3 +17,8 @@ kubectl_build('frontend',
     run('nginx -s reload', trigger='./nginx.conf')
   ]
 )
+
+# EXPECTED_REF=frontend:tilt-build-1673651381
+# EXPECTED_IMAGE=library/frontend
+# EXPECTED_TAG=tilt-build-1673651381
+# kubectl build --context cloud-dev -f ./cloud-dev-frontend/Dockerfile --registry-secret docker-registry -t $EXPECTED_REF ./cloud-dev-frontend
