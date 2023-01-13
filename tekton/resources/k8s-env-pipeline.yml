@@ -35,7 +35,7 @@ spec:
     - name: ideContainerImage
       type: string
       description: Base container image to run ide resources in cloud
-      default: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-v2
+      default: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-v3
 
   workspaces:
     - name: git-source

@@ -16,6 +16,8 @@ spec:
       value: <%= ENV['ACTION'] %>
     - name: personPublicKeyUrl
       value: <%= ENV['PUBLIC_KEY_URL'] %>
+    - name: ideContainerImage
+      value: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:<%= ENV['IDE_IMAGE_TAG'] %>
   workspaces:
     - name: git-source
       volumeClaimTemplate:
