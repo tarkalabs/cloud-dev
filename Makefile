@@ -4,6 +4,13 @@ DOMAIN = "dev.klstr.io"
 SSH_CONF_FILE = "$(HOME)/.cloud-dev/ssh_config"
 SSH_CONF_LINE = "Include $(HOME)/.cloud-dev/ssh_config"
 
+ecr-login:
+	aws --profile tarkalabs ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 260741046218.dkr.ecr.us-east-1.amazonaws.com
+
+build-and-push-docker-image:
+	docker build -t 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v) .
+	docker push 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v)
+
 cloud-env-create:
 	PERSON=$(p) PUBLIC_KEY_URL="$(pku)" ACTION=create INFRA_REPO_REVISION=dev erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
 	kubectl create -f output/k8s-env-pipeline-run.yml
