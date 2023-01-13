@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: env-<%= ENV['PERSON'] %>-
+  generateName: env-<%= ENV['PERSON'] %>-<%= ENV['ACTION'] %>-
   namespace: devops
 spec:
   serviceAccountName: tekton-sa
