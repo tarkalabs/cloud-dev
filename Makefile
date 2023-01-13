@@ -1,12 +1,8 @@
-RECENT_PIPELINERUN_ID = $(shell tkn pipelineruns -n devops list --limit 1 --no-headers | cut -d' ' -f1)
-SVC_PORT = $(shell kubectl get service -n $(p) $(p)-ide-svc | grep -oe  "\d\{5\}")
-DOMAIN = "dev.klstr.io"
-SSH_CONF_FILE = "$(HOME)/.cloud-dev/ssh_config"
-SSH_CONF_LINE = "Include $(HOME)/.cloud-dev/ssh_config"
-
+# make ecr-login p=default
 ecr-login:
-	aws --profile tarkalabs ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 260741046218.dkr.ecr.us-east-1.amazonaws.com
+	aws --profile $(p) ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 260741046218.dkr.ecr.us-east-1.amazonaws.com
 
+# make build-and-push-docker-image v=v6
 build-and-push-docker-image:
 	docker build -t 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v) .
 	docker push 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v)
@@ -26,6 +22,7 @@ cloud-env-delete:
 	PERSON=$(p) ACTION=delete INFRA_REPO_REVISION="$(irr)" erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
 	kubectl create -f output/k8s-env-pipeline-run.yml
 
+RECENT_PIPELINERUN_ID = $(shell tkn pipelineruns -n devops list --limit 1 --no-headers | cut -d' ' -f1)
 tekton-pipelineruns-log-recent:
 	tkn pipelineruns logs -f $(RECENT_PIPELINERUN_ID)
 
@@ -38,6 +35,11 @@ tekton-pipelineruns-delete-all:
 tekton-resources-k8s-apply:
 	kubectl apply -n devops -f tekton/resources/
 
+# make update-ssh-config p=madhav spf=~/.ssh/cloud-dev.pem
+SVC_PORT = $(shell kubectl get service -n $(p) $(p)-ide-svc | grep -oe  "\d\{5\}")
+DOMAIN = "dev.klstr.io"
+SSH_CONF_FILE = "$(HOME)/.cloud-dev/ssh_config"
+SSH_CONF_LINE = "Include $(HOME)/.cloud-dev/ssh_config"
 update-ssh-config:
 	$(shell [ ! -d "$(HOME)/.cloud-dev" ] && mkdir $(HOME)/.cloud-dev)
 	grep -qxF $(SSH_CONF_LINE) ~/.ssh/config || echo \\n$(SSH_CONF_LINE) >> ~/.ssh/config
