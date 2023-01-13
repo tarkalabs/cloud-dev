@@ -9,15 +9,23 @@ spec:
     name: cloud-dev-env-pipeline
   params:
     - name: cloudDevRepoRevision
+      <% if ENV['INFRA_REPO_REVISION'].nil? || ENV['INFRA_REPO_REVISION'] == "" %>
+      value: dev
+      <% else %>
       value: <%= ENV['INFRA_REPO_REVISION'] %>
+      <% end %>
     - name: personName
       value: <%= ENV['PERSON'] %>
     - name: action
       value: <%= ENV['ACTION'] %>
+    <% unless ENV['PUBLIC_KEY_URL'].nil? %>
     - name: personPublicKeyUrl
       value: <%= ENV['PUBLIC_KEY_URL'] %>
+    <% end %>
+    <% unless ENV['IDE_IMAGE_TAG'].nil? %>
     - name: ideContainerImage
       value: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:<%= ENV['IDE_IMAGE_TAG'] %>
+    <% end %>
   workspaces:
     - name: git-source
       volumeClaimTemplate:

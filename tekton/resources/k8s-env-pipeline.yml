@@ -24,6 +24,7 @@ spec:
     - name: personPublicKeyUrl
       type: string
       description: Person public key to use for ssh config
+      default: ssh-rsa xxxyyyzzz
     - name: domain
       type: string
       description: DNS domain name to configure

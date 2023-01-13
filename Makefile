@@ -12,15 +12,15 @@ build-and-push-docker-image:
 	docker push 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v)
 
 cloud-env-create:
-	PERSON=$(p) PUBLIC_KEY_URL="$(pku)" IDE_IMAGE_TAG="$(iit)" ACTION="create --save-config" INFRA_REPO_REVISION=dev erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
+	PERSON=$(p) PUBLIC_KEY_URL="$(pku)" IDE_IMAGE_TAG="$(iit)" ACTION=create INFRA_REPO_REVISION="$(irr)" erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
 	kubectl create -f output/k8s-env-pipeline-run.yml
 
 cloud-env-update:
-	PERSON=$(p) PUBLIC_KEY_URL="$(pku)" IDE_IMAGE_TAG="$(iit)" ACTION=apply INFRA_REPO_REVISION=dev erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
+	PERSON=$(p) PUBLIC_KEY_URL="$(pku)" IDE_IMAGE_TAG="$(iit)" ACTION=apply INFRA_REPO_REVISION="$(irr)" erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
 	kubectl create -f output/k8s-env-pipeline-run.yml
 
 cloud-env-delete:
-	PERSON=$(p) ACTION=delete INFRA_REPO_REVISION=dev erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
+	PERSON=$(p) ACTION=delete INFRA_REPO_REVISION="$(irr)" erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
 	kubectl create -f output/k8s-env-pipeline-run.yml
 
 tekton-pipelineruns-log-recent:
