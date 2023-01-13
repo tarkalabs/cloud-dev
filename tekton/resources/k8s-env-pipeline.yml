@@ -69,14 +69,14 @@ spec:
         - name: revision
           value: "$(params.cloudDevRepoRevision)"
 
-    - name: build-and-update-config
+    - name: update-k8s-yaml
       runAfter:
         - clone-repo
       workspaces:
         - name: source
           workspace: git-source
       taskRef:
-        name: cloud-dev-build-and-update-config
+        name: cloud-dev-update-env-values
       params:
         - name: domain
           value: "$(params.domain)"
@@ -89,9 +89,9 @@ spec:
         - name: personPublicKeyUrl
           value: "$(params.personPublicKeyUrl)"
 
-    - name: create-k8s-resources
+    - name: update-k8s-resources
       runAfter:
-        - build-and-update-config
+        - update-k8s-yaml
       workspaces:
         - name: manifest-dir
           workspace: git-source
@@ -100,4 +100,4 @@ spec:
       params:
         - name: script
           value: |
-            kubectl $(params.action) -f ide-deployment.yml
+            kubectl $(params.action) -f k8s_manifests/ide-deployment.yml
