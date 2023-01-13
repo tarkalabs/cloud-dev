@@ -1,0 +1,18 @@
+version_settings(constraint='>=0.31.1')
+
+load('ext://kubectl_build', 'kubectl_build')
+
+k8s_yaml([
+  'cloud-dev-frontend/deployment.yaml'
+])
+
+k8s_resource("frontend", port_forwards="3000", labels=["frontend"])
+
+kubectl_build('frontend',
+  context="./cloud-dev-frontend",
+  build_args={},
+  live_update=[
+    sync('cloud-dev-frontend/src/*.html', '/usr/share/nginx/html'),
+    run('nginx -s reload', trigger='./nginx.conf')
+  ]
+)
