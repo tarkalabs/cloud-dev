@@ -48,9 +48,9 @@ cloudWatch:
 nodeGroups:
   - name: code
     instanceType: m6a.large
-    desiredCapacity: 1
+    desiredCapacity: 2
     minSize: 1
-    maxSize: 2
+    maxSize: 3
     propagateASGTags: true
     ebsOptimized: true
     volumeSize: 50

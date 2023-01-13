@@ -30,5 +30,5 @@ SSH_CONF_LINE = "Include $(HOME)/.cloud-dev/ssh_config"
 update-ssh-config:
 	$(shell [ ! -d "$(HOME)/.cloud-dev" ] && mkdir $(HOME)/.cloud-dev)
 	grep -qxF $(SSH_CONF_LINE) ~/.ssh/config || echo \\n$(SSH_CONF_LINE) >> ~/.ssh/config
-	DOMAIN=$(DOMAIN) PERSON="$(p)" SSH_PORT=$(SVC_PORT) erb ssh-config.erb > $(SSH_CONF_FILE)
+	DOMAIN=$(DOMAIN) PERSON="$(p)" SSH_PORT=$(SVC_PORT) SSH_PRIVATE_FILE=$(spf) erb ssh-config.erb > $(SSH_CONF_FILE)
 	@echo "\nCloud dev environment ssh config updated. Please select $(p)-cloud-dev to start development."

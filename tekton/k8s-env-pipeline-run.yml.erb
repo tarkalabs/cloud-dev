@@ -14,6 +14,8 @@ spec:
       value: <%= ENV['PERSON'] %>
     - name: action
       value: <%= ENV['ACTION'] %>
+    - name: personPublicKeyUrl
+      value: <%= ENV['PUBLIC_KEY_URL'] %>
   workspaces:
     - name: git-source
       volumeClaimTemplate:

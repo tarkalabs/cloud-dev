@@ -9,6 +9,9 @@ spec:
       type: string
       description: Person name to prefix kubernetes resources
       default: xyz
+    - name: personPublicKeyUrl
+      type: string
+      description: Person public key to use for ssh config
     - name: domain
       type: string
       description: DNS domain name to configure
@@ -41,3 +44,5 @@ spec:
           value: "$(params.storageSize)"
         - name: IDE_IMAGE
           value: "$(params.ideContainerImage)"
+        - name: PERSON_PUBLIC_KEY_URL
+          value: "$(params.personPublicKeyUrl)"

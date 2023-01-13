@@ -21,6 +21,9 @@ spec:
       type: string
       description: Person name to prefix kubernetes resources
       default: xyz
+    - name: personPublicKeyUrl
+      type: string
+      description: Person public key to use for ssh config
     - name: domain
       type: string
       description: DNS domain name to configure
@@ -66,14 +69,14 @@ spec:
         - name: revision
           value: "$(params.cloudDevRepoRevision)"
 
-    - name: update-k8s-yaml
+    - name: build-and-update-config
       runAfter:
         - clone-repo
       workspaces:
         - name: source
           workspace: git-source
       taskRef:
-        name: cloud-dev-update-env-values
+        name: cloud-dev-build-and-update-config
       params:
         - name: domain
           value: "$(params.domain)"
@@ -83,10 +86,12 @@ spec:
           value: "$(params.storageSize)"
         - name: ideContainerImage
           value: "$(params.ideContainerImage)"
+        - name: personPublicKeyUrl
+          value: "$(params.personPublicKeyUrl)"
 
     - name: create-k8s-resources
       runAfter:
-        - update-k8s-yaml
+        - build-and-update-config
       workspaces:
         - name: manifest-dir
           workspace: git-source

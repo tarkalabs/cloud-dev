@@ -46,6 +46,9 @@ spec:
       containers:
         - name: ide
           image: <%= ENV['IDE_IMAGE'] %>
+          env:
+            - name: PERSON_PUBLIC_KEY_URL
+              value: <%= ENV['PERSON_PUBLIC_KEY_URL'] %>
           ports:
             - containerPort: 22
               name: ssh-port
