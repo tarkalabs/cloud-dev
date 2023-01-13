@@ -30,7 +30,7 @@ spec:
     - image: ruby:alpine
       workingDir: $(workspaces.source.path)
       script: |
-        erb ide-deployment.yml.erb > ide-deployment.yml
+        erb k8s_manifests/ide-deployment.yml.erb > ide-deployment.yml
         cat ide-deployment.yml
       env:
         - name: DOMAIN
