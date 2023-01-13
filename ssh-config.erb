@@ -1,0 +1,7 @@
+Host <%= ENV['PERSON'] %>-cloud-dev
+  User root
+  Port <%= ENV['SSH_PORT'] || 2222 %>
+  HostName <%= ENV['PERSON'] %>.<%= ENV['DOMAIN'] %>
+  ForwardAgent yes
+  IdentityFile <%= ENV['SSH_PRIVATE_FILE'] || "~/.ssh/id_rsa" %>
+  ServerAliveInterval 60
