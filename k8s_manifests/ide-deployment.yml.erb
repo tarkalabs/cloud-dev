@@ -46,6 +46,7 @@ spec:
       containers:
         - name: ide
           image: <%= ENV['IDE_IMAGE'] %>
+          imagePullPolicy: Always
           env:
             - name: PERSON_PUBLIC_KEY_URL
               value: <%= ENV['PERSON_PUBLIC_KEY_URL'] %>

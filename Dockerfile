@@ -7,6 +7,6 @@ RUN curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/in
 RUN apt install -y docker \
   && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
-COPY startup.sh /root/work/startup.sh
+COPY startup.sh /root/startup.sh
 
-CMD [ "/root/work/startup.sh" ]
+CMD [ "/root/startup.sh" ]
