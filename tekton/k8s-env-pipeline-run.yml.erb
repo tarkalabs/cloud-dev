@@ -8,21 +8,23 @@ spec:
   pipelineRef:
     name: cloud-dev-env-pipeline
   params:
+    <% unless ENV['INFRA_REPO_REVISION'].nil? || ENV['INFRA_REPO_REVISION'] == "" %>
     - name: cloudDevRepoRevision
-      <% if ENV['INFRA_REPO_REVISION'].nil? || ENV['INFRA_REPO_REVISION'] == "" %>
-      value: dev
-      <% else %>
       value: <%= ENV['INFRA_REPO_REVISION'] %>
-      <% end %>
+    <% end %>
     - name: personName
       value: <%= ENV['PERSON'] %>
     - name: action
       value: <%= ENV['ACTION'] %>
-    <% unless ENV['PUBLIC_KEY_URL'].nil? %>
+    <% unless ENV['STORAGE_SIZE'].nil?  || ENV['STORAGE_SIZE'] == "" %>
+    - name: storageSize
+      value: <%= ENV['STORAGE_SIZE'] %>
+    <% end %>
+    <% unless ENV['PUBLIC_KEY_URL'].nil? || ENV['PUBLIC_KEY_URL'] == "" %>
     - name: personPublicKeyUrl
       value: <%= ENV['PUBLIC_KEY_URL'] %>
     <% end %>
-    <% unless ENV['IDE_IMAGE_TAG'].nil? %>
+    <% unless ENV['IDE_IMAGE_TAG'].nil? || ENV['IDE_IMAGE_TAG'] == "" %>
     - name: ideContainerImage
       value: 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:<%= ENV['IDE_IMAGE_TAG'] %>
     <% end %>

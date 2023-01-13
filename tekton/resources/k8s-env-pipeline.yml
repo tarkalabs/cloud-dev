@@ -32,7 +32,7 @@ spec:
     - name: storageSize
       type: string
       description: Cloud storage size for each user
-      default: 1Gi
+      default: 1
     - name: ideContainerImage
       type: string
       description: Base container image to run ide resources in cloud
@@ -84,7 +84,7 @@ spec:
         - name: personName
           value: "$(params.personName)"
         - name: storageSize
-          value: "$(params.storageSize)"
+          value: "$(params.storageSize)Gi"
         - name: ideContainerImage
           value: "$(params.ideContainerImage)"
         - name: personPublicKeyUrl

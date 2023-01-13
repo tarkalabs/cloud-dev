@@ -78,7 +78,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: gp3
+        storageClassName: gp3-delete
         resources:
           requests:
             storage: <%= ENV['STORAGE_SIZE'] %>
