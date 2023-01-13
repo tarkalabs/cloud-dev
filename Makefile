@@ -7,7 +7,7 @@ build-and-push-docker-image:
 	docker build -t 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v) .
 	docker push 260741046218.dkr.ecr.us-east-1.amazonaws.com/cloud-dev:ubuntu-base-$(v)
 
-# make cloud-env-create p=madhav pku="https://github.com/svmadhavareddy.keys" iit="ubuntu-base-v4" ss=2 irr=dev
+# make cloud-env-create p=madhav pku="https://github.com/svmadhavareddy.keys" iit="ubuntu-base-v8" ss=2 irr=dev
 cloud-env-create:
 	PERSON=$(p) PUBLIC_KEY_URL="$(pku)" IDE_IMAGE_TAG="$(iit)" STORAGE_SIZE="$(ss)" ACTION=create INFRA_REPO_REVISION="$(irr)" erb tekton/k8s-env-pipeline-run.yml.erb > output/k8s-env-pipeline-run.yml
 	kubectl create -f output/k8s-env-pipeline-run.yml

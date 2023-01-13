@@ -9,8 +9,7 @@ Installation Notes:
     - eksctl create cluster -f cluster-config.yml --profile tarkalabs --dry-run
   - Updated kube context in local
     - awst => aws --profile tarkalabs
-    - awst eks update-kubeconfig --region us-east-1 --name cloud-dev
-    - kubectl config rename-context arn:aws:eks:us-east-1:260741046218:cluster/cloud-dev cloud-dev
+    - awst eks update-kubeconfig --region us-east-1 --name cloud-dev --alias cloud-dev
     - kubectl config use-context cloud-dev
     - kubectl config delete-context cloud-dev
 

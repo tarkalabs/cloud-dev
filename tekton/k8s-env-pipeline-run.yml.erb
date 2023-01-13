@@ -15,7 +15,7 @@ spec:
     - name: personName
       value: <%= ENV['PERSON'] %>
     - name: action
-      value: <%= ENV['ACTION'] %>
+      value: <%= ENV['ACTION'] == "create" ? "apply" : ENV['ACTION'] %>
     <% unless ENV['STORAGE_SIZE'].nil?  || ENV['STORAGE_SIZE'] == "" %>
     - name: storageSize
       value: <%= ENV['STORAGE_SIZE'] %>

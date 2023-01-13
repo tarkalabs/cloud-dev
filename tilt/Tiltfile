@@ -1,4 +1,5 @@
 version_settings(constraint='>=0.31.1')
+allow_k8s_contexts('cloud-dev')
 
 load('ext://kubectl_build', 'kubectl_build')
 
