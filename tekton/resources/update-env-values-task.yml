@@ -46,3 +46,6 @@ spec:
           value: "$(params.ideContainerImage)"
         - name: PERSON_PUBLIC_KEY_URL
           value: "$(params.personPublicKeyUrl)"
+          # TODO change this properly
+        - name: AWS_ACCOUNT_ID
+          value: 260741046218
